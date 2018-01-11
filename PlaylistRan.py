@@ -55,44 +55,89 @@ def findnth(haystack, needle, n):
 import struct
 from collections import namedtuple
 
-filename = input('\nEnter playlist (.xspf) filename [in same directory as this program]: ')
+import randomize
+import sort
+
+print('-------------------------------')
+print('Martin Barker VLC Playlist Tool')
+print('-------------------------------')
+
+filename = input('\nEnter target playlist (.xspf) filename [in same directory as this program]: ')
 filename = filename + '.xspf'
 print('randomizing the playlist file: ', filename)
+#
+#  valid()   CHECKS THAT PLAYLIST FILE EXISTS AND CAN BE OPENED
+#
 
-#read in playlist file in directory as text file
-f = open(filename, 'r')                               #open file
-message = f.read()                                    #store file contents as string message
-last_open = message.rfind('<vlc:id>')                 #find last instance of vlc:id open tag
-last_close = message.rfind('</vlc:id>')               #find last instance of vlc:id close tag
-count_string = message[last_open+8:last_close]        #use found indexes to create track count string
-count = int(count_string)                             #convert track count string to int
 
-mylist = UnorderedList()                              #create unordered linked list
+initial_i = 1
+loop = 1
+while loop == 1:
+    print('\nWhat would you like to do to', filename, ' ?')
+    print('1) Randomize  ')
+    print('2) Sort by genre  ')
+    print('0) exit  ')
+    initial_i = input('')
+    #error handle
+    if initial_i == '1':
+        ran_i = 1
+        loop2 = 1
+        while loop2 == 1:
+            print('\n~~~Randomization~~~')
+            print(' Would you like to:')
+            print(' 1) Overwrite playlist ')
+            print(' 2) Save to new playlist ')
+            print(' 0) Go back to main menu ')
+            ran_i = input('\n')
+            if ran_i == '0':
+                loop2 = loop2+1
+            elif ran_i == '1':
+                print("Overwrite playlist")
+                randomize.ran(filename, filename)
+            elif ran_i == '2':
+                print("Save to new playlist")
+                savename = 'x'
+                print('     Enter the name of the output playlist file:')
+                savename = input('      ')
+                savename = savename + '.xspf'
+                print('     Output Playlist: ', savename)
+                # verify(savename)
+                randomize.ran(filename, savename)
+            else:
+                print("Input was not correct, please enter a single number")
 
-#print('number of tracks:', count)
+    elif initial_i == '0':
+        loop = loop+1
+         #quit
+    elif initial_i == '2':
+        ran_i = 1
+        loop2 = 1
+        while loop2 == 1:
+            print('\n+++Sort By Genre+++')
+            print(' Would you like to:')
+            print(' 1) Overwrite playlist ')
+            print(' 2) Save to new playlist ')
+            print(' 0) Go back to main menu ')
+            ran_i = input('\n')
+            if ran_i == '0':
+                loop2 = loop2+1
+            elif ran_i == '1':
+                print("Overwrite playlist")
+                sort.genreSort(filename, filename)
+            elif ran_i == '2':
+                print("Save to new playlist")
+                savename = 'x'
+                print('     Enter the name of the output playlist file:')
+                savename = input('      ')
+                savename = savename + '.xspf'
+                print('     Output Playlist: ', savename)
+                # verify(savename)
+                sort.genreSort(filename, savename)
+            else:
+                print("Input was not correct, please enter a single number")
+        #overwrite? save to new? should be selection specific decision
+    else:
+        print("Input was not correct, please enter a single number")
 
-for i in range (0, count+1):                          #for loop which runs through the number of tracks
-#    print('were in loop number: ', i)
-    vlcid_open = findnth(message, '<vlc:id>', i)      #finds i'th occurance of vlc:id open and close tag
-    vlcid_close = findnth(message, '</vlc:id>', i)
-     #track num occurs at index vlcid_open
 
-#generate ran num from 0 to count
-    rannum = randint(0, count)
-#check that ran num is not in linked list
-    while(mylist.search(rannum)):                     #if rannum is in linked list, re-generate
-        rannum = randint(0, count)
-    else:                                             #else add rannum to linked list
-        mylist.add(rannum)
-    #print('rannum generated: ', rannum, '\n')
-#add ran num to linkedlist
-    rannum_string = str(rannum)
-#update message string to inlcude new ran num for track index
-    message = message[:vlcid_open+8] + rannum_string + message[vlcid_close:]
-
-f.close()
-#write message to file
-f = open(filename, 'w')
-f.write(message)
-f.close()
-print('randomization completed, and has been writen to ', filename)
+print('\nexiting...')
